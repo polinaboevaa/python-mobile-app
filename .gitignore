@@ -1,0 +1,4 @@
+venv
+medicineSchedule.db
+.idea
+__pycache__
