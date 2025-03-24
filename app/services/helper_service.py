@@ -4,9 +4,6 @@ class HelperService:
 
     @staticmethod
     def is_schedule_active(start_of_reception: datetime, duration_days: int) -> bool:
-        """
-        Проверяет расписание на актуальность.
-        """
         if duration_days is None:
             return True
         
@@ -21,17 +18,11 @@ class HelperService:
 
     @staticmethod
     def get_start_of_reception() -> datetime:
-        """
-        Возвращает дату и время начала приема таблеток.
-        """
         now = datetime.now() + timedelta(days=1) 
         return now.replace(hour=8, minute=0, second=0, microsecond=0) 
 
     @staticmethod
     def round_minutes(dt: datetime) -> datetime:
-        """
-        Округляет время до ближайшего кратного 15 минут.
-        """
         if isinstance(dt, str):  
             dt = datetime.strptime(dt)
 
@@ -45,6 +36,9 @@ class HelperService:
             dt = dt.replace(hour=dt.hour + 1, minute=0)
         else:
             dt = dt.replace(minute=minutes, second=0, microsecond=0)
+
+        if dt.hour >= 22:
+            dt = dt.replace(hour=21, minute=45)
 
         return dt.strftime("%H:%M")  
 

@@ -28,7 +28,7 @@ class Schedule(Model):
     __tablename__ = "schedules"
 
     schedule_id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(nullable=False)
+    user_id: Mapped[int] = mapped_column(nullable=False, index=True)
     medicine: Mapped[str] = mapped_column(String, nullable=False)
     frequency: Mapped[int] = mapped_column(Integer, nullable=False)  # кол-во приёмов в день
     duration_days: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, default=None)  # если 0  значит прием пожизненый

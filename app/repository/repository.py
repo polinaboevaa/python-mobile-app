@@ -66,6 +66,13 @@ class Repository:
 
         return rows
     
+    @staticmethod
+    async def check_user(db: AsyncSession, user_id: int):
+        query = select(Schedule).where(Schedule.user_id == user_id)
+        result = await db.execute(query)
+        user = result.scalars().first()
+        return user is not None
+    
 
 
 

@@ -1,4 +1,5 @@
-from typing import Optional, List
+from typing import Optional
+import re
 from pydantic import BaseModel, field_validator
 
 class ScheduleModel(BaseModel):
@@ -7,12 +8,8 @@ class ScheduleModel(BaseModel):
     frequency: int  
     duration_days: Optional[int] = None
 
-    @field_validator("user_id")
-    @classmethod
-    def check_user_id(cls, value):
-        if value <= 0:
-            raise ValueError("user_id должен быть больше или равен 0")
-        return value
+    class Config:
+        from_attributes = True
 
     @field_validator("frequency")
     @classmethod
@@ -26,6 +23,17 @@ class ScheduleModel(BaseModel):
     def check_duration_days(cls, value):
         if value == 0:
             raise ValueError("duration_days не может быть 0 (для пожизненного приема укажите null)")
+        return value
+    
+    @field_validator("medicine")
+    @classmethod
+    def check_medicine(cls, value):
+        if not value.strip():
+            raise ValueError("medicine не может быть пустым")
+
+        if not re.match("^[A-Za-zА-Яа-я0-9\\s]+$", value):
+            raise ValueError("medicine не может содержать спецсимволы")
+
         return value
 
 

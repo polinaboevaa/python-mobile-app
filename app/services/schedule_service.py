@@ -5,14 +5,17 @@ from typing import Dict, Any, List
 from config import PERIOD, START_TIME, INTERVAL_HOURS
 from app.repository.repository import Repository
 from app.services.helper_service import HelperService
+from app.services.user_service import UserService
+from app.schemas.schemas import ScheduleModel
 
 class ScheduleService:
-    """Класс для работы с расписанием приёма лекарств."""
 
     async def get_schedule_for_day(db: AsyncSession, user_id: int, schedule_id: int) -> Dict[str, Any]:
         """
         Возвращает время приема таблеток на день для конкретного пользователя и препарата.
         """ 
+        await UserService.check_user_existence(db, user_id)
+        
         row = await Repository.get_schedule_data_by_schedule_id(db, user_id, schedule_id)
 
         if not row:
@@ -38,6 +41,8 @@ class ScheduleService:
         """
         from_date = datetime.now()  
         to_date = from_date + PERIOD  
+
+        await UserService.check_user_existence(db, user_id)
 
         rows = await Repository.get_schedules_by_user_id(db, user_id)
         
@@ -84,6 +89,8 @@ class ScheduleService:
         """
         Возвращает ID актуальных расписаний пользователя.
         """
+        await UserService.check_user_existence(db, user_id)
+        
         rows = await Repository.get_schedules_data_by_user_id(db, user_id)
 
         if not rows:
@@ -95,6 +102,10 @@ class ScheduleService:
                 schedule_ids.append(schedule_id)
 
         return {"active_schedule_ids": schedule_ids}
+    
+    @staticmethod
+    async def add_schedule(data: ScheduleModel, db: AsyncSession):
+        return await Repository.add_schedule(db, data)
 
     
             
