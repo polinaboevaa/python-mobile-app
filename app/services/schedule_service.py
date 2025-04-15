@@ -1,22 +1,24 @@
 from datetime import datetime, timedelta
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Dict, Any, List
 
 from config import PERIOD, START_TIME, INTERVAL_HOURS
-from app.repository.repository import Repository
+from app.repository.schedule_repository import ScheduleRepository
 from app.services.helper_service import HelperService
 from app.services.user_service import UserService
 from app.schemas.schemas import ScheduleModel
 
 class ScheduleService:
+    def __init__(self, schedule_repo: ScheduleRepository, user_service: UserService):
+        self.schedule_repo = schedule_repo
+        self.user_service = user_service
 
-    async def get_schedule_for_day(db: AsyncSession, user_id: int, schedule_id: int) -> Dict[str, Any]:
+    async def get_schedule_for_day(self, user_id: int, schedule_id: int) -> Dict[str, Any]:
         """
         Возвращает время приема таблеток на день для конкретного пользователя и препарата.
         """ 
-        await UserService.check_user_existence(db, user_id)
+        await self.user_service.check_user_existence(user_id)
         
-        row = await Repository.get_schedule_data_by_schedule_id(db, user_id, schedule_id)
+        row = await self.schedule_repo.get_schedule_data_by_schedule_id(user_id, schedule_id)
 
         if not row:
             return {"message": "Нет расписаний для пользователя"}
@@ -35,16 +37,16 @@ class ScheduleService:
             "time_list": time_list
         }
 
-    async def get_schedules_in_period(db: AsyncSession, user_id: int) -> Dict[str, List[str]]:
+    async def get_schedules_in_period(self, user_id: int) -> Dict[str, List[str]]:
         """
         Возвращает расписание приёмов лекарств для пользователя на указанный период.
         """
         from_date = datetime.now()  
         to_date = from_date + PERIOD  
 
-        await UserService.check_user_existence(db, user_id)
+        await self.user_service.check_user_existence(user_id)
 
-        rows = await Repository.get_schedules_by_user_id(db, user_id)
+        rows = await self.schedule_repo.get_schedules_by_user_id(user_id)
         
         if not rows:
             return {"message": "Нет расписаний для пользователя"}
@@ -85,13 +87,13 @@ class ScheduleService:
 
 
 
-    async def get_schedules_ids(user_id: int, db: AsyncSession) -> Dict[str, List[int]]:
+    async def get_schedules_ids(self, user_id: int) -> Dict[str, List[int]]:
         """
         Возвращает ID актуальных расписаний пользователя.
         """
-        await UserService.check_user_existence(db, user_id)
+        await self.user_service.check_user_existence(user_id)
         
-        rows = await Repository.get_schedules_data_by_user_id(db, user_id)
+        rows = await self.schedule_repo.get_schedules_data_by_user_id(user_id)
 
         if not rows:
             return {"message": "Нет расписаний для пользователя"}
@@ -102,10 +104,11 @@ class ScheduleService:
                 schedule_ids.append(schedule_id)
 
         return {"active_schedule_ids": schedule_ids}
-    
-    @staticmethod
-    async def add_schedule(data: ScheduleModel, db: AsyncSession):
-        return await Repository.add_schedule(db, data)
+
+    async def add_schedule(self, data: ScheduleModel):
+        user = await self.user_service.get_or_create_user(data.user_id)
+        schedule_id = await self.schedule_repo.add_schedule(data)
+        return schedule_id
 
     
             
