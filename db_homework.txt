@@ -15,29 +15,31 @@ CREATE TABLE developers (
 
 3. Добавьте в таблицу 20 записей на основании правил ниже. Выполните запрос SELECT * FROM developers;
 
-"id"	"name"	"department"	"geolocation"	"last_known_ip"	"is_available"
-"2c277298-605b-4793-90dd-1de6b4b8133d"	"Mary Smith"	"frontend"	"0101000020E61000005AF5B9DA8A4459C06C3F19E3C3224D40"	"112.192.250.127"	true
-"f4e4cc9e-cacf-47d4-81a2-037b6b9d8c3c"	"John Smith"	"android"	"0101000020E610000098FC4FFEEE334140F4311F10E8DC22C0"	"22.244.40.236"	false
-"322e823f-4db7-4687-93d6-4a38d79511fe"	"Robert Brown"	"ios"	"0101000020E6100000D234289A870B66C073F56393FCC24240"	"116.150.40.9"	true
-"3ee87ef3-db43-4bad-920a-d6c794c7ba2d"	"Robert Johnson"	"ios"	"0101000020E61000004F081D7409CF31400322C495B38741C0"	"125.165.185.210"	true
-"ad3ff567-387c-489b-98b4-0f0bd12fc514"	"James Brown"	"ios"	"0101000020E610000092239D8191872A40B7291E17D5315140"	"18.229.23.205"	false
-"08a66ffb-712d-47ec-b89f-458ea97bb082"	"Robert Smith"	"ios"	"0101000020E6100000B796C9703C9F1040AC1919E42E224440"	"28.103.193.98"	false
-"2b182664-4b0a-4d66-b472-cab357e0c1f2"	"Patricia Williams"	"android"	"0101000020E6100000904946CEC25B5FC0BBEEAD484C5D55C0"	"235.79.17.51"	true
-"19719c30-6705-4687-8f5d-0136d88b8c3d"	"James Smith"	"ios"	"0101000020E610000099840B7984CD64C0CE6F9868900A32C0"	"68.102.239.148"	true
-"f322fe99-19b6-464a-9076-40cfa8ea4b5d"	"James Smith"	"frontend"	"0101000020E6100000213CDA38620B59C03E7958A835D35440"	"227.93.15.149"	false
-"1bd36f85-149a-460a-a4cc-04ef62d5b7f8"	"Patricia Smith"	"frontend"	"0101000020E6100000D3A0681E400665C00074982F2FAE40C0"	"115.240.68.202"	true
-"a4206d9c-69f3-43f8-a1d7-229cd1aabec4"	"John Jones"	"ios"	"0101000020E61000005B069CA564CA55C0295AB91798EB4CC0"	"220.24.94.36"	false
-"7b956a05-4db0-4008-abd1-5da03b0fa43a"	"Robert Williams"	"ios"	"0101000020E6100000D06053E751775140D65757056AEF44C0"	"73.21.55.91"	false
-"979cacae-4def-4b1b-93c8-e96f5c41ef48"	"Mary Smith"	"frontend"	"0101000020E6100000CE39782634065740611C5C3AE61C0FC0"	"69.234.55.21"	true
-"c55ab5cf-ccac-4341-9c85-a16ce40d0525"	"Patricia Smith"	"frontend"	"0101000020E61000000B09185DDE4E55C0323CF6B3584E4A40"	"151.0.44.129"	true
-"6b0f0856-2452-4f15-a9d1-bb38e56f7674"	"Mary Brown"	"android"	"0101000020E6100000CCB56801DA9F52C00F80B8AB57992140"	"136.223.218.239"	false
-"5692d2b1-09a3-4d1b-8870-df307a1e7fa7"	"Mary Brown"	"frontend"	"0101000020E6100000EF5696E82CB94C40F9669B1BD313F63F"	"2.54.158.78"	false
-"08ac5cda-e7b0-4b1a-b0eb-dadf22171d04"	"Mary Jones"	"ios"	"0101000020E6100000749A05DA1D84624043C70E2A71FF4D40"	"82.166.92.172"	true
-"fab927a3-7713-4a55-a260-a007ecbbeffb"	"Mary Brown"	"android"	"0101000020E6100000A6D24F38BB665DC021AF0793E2774740"	"53.216.81.133"	false
-"103dbd62-5dd6-4bbd-8160-a525ed0b5f2b"	"James Johnson"	"backend"	"0101000020E610000070D234281A806040DD7D8E8F16B94CC0"	"255.48.10.28"	false
-"bee49a57-6e75-4e57-9042-e664b404334f"	"James Smith"	"ios"	"0101000020E6100000239EEC6646476240F0879FFF1ECE4B40"	"131.216.127.23"	false
+                 id                                                  |       name               | department |         geolocation                                                                                  |   last_known_ip   | is_available
+-----------------------------------------------------------+-------------------------+----------------+--------------------------------------------------------------------------------------------+------------------------+--------------
+ 2c277298-605b-4793-90dd-1de6b4b8133d | Mary Smith           | frontend   | 0101000020E61000005AF5B9DA8A4459C06C3F19E3C3224D40    | 112.192.250.127 | true
+ f4e4cc9e-cacf-47d4-81a2-037b6b9d8c3c    | John Smith           | android    | 0101000020E610000098FC4FFEEE334140F4311F10E8DC22C0     | 22.244.40.236     | false
+ 322e823f-4db7-4687-93d6-4a38d79511fe   | Robert Brown       | ios            | 0101000020E6100000D234289A870B66C073F56393FCC24240      | 116.150.40.9       | true
+ 3ee87ef3-db43-4bad-920a-d6c794c7ba2d   | Robert Johnson    | ios            | 0101000020E61000004F081D7409CF31400322C495B38741C0      | 125.165.185.210 | true
+ ad3ff567-387c-489b-98b4-0f0bd12fc514     | James Brown       | ios            | 0101000020E610000092239D8191872A40B7291E17D5315140       | 18.229.23.205     | false
+ 08a66ffb-712d-47ec-b89f-458ea97bb082    | Robert Smith        | ios            | 0101000020E6100000B796C9703C9F1040AC1919E42E224440      | 28.103.193.98     | false
+ 2b182664-4b0a-4d66-b472-cab357e0c1f2   | Patricia Williams | android      | 0101000020E6100000904946CEC25B5FC0BBEEAD484C5D55C0 | 235.79.17.51       | talse
+ 19719c30-6705-4687-8f5d-0136d88b8c3d  | James Smith        | ios            | 0101000020E610000099840B7984CD64C0CE6F9868900A32C0     | 68.102.239.148   | true
+ f322fe99-19b6-464a-9076-40cfa8ea4b5d    | James Smith        | frontend    | 0101000020E6100000213CDA38620B59C03E7958A835D35440     | 227.93.15.149     | false
+ 1bd36f85-149a-460a-a4cc-04ef62d5b7f8    | Patricia Smith      | frontend     | 0101000020E6100000D3A0681E400665C00074982F2FAE40C0     | 115.240.68.202   | true
+ a4206d9c-69f3-43f8-a1d7-229cd1aabec4   | John Jones           | ios             | 0101000020E61000005B069CA564CA55C0295AB91798EB4CC0   | 220.24.94.36       | false
+ 7b956a05-4db0-4008-abd1-5da03b0fa43a  | Robert Williams   | ios              | 0101000020E6100000D06053E751775140D65757056AEF44C0      | 73.21.55.91         | false
+ 979cacae-4def-4b1b-93c8-e96f5c41ef48    | Mary Smith           | frontend     | 0101000020E6100000CE39782634065740611C5C3AE61C0FC0     | 69.234.55.21       | true
+ c55ab5cf-ccac-4341-9c85-a16ce40d0525   | Patricia Smith      | frontend     | 0101000020E61000000B09185DDE4E55C0323CF6B3584E4A40     | 151.0.44.129       | true
+ 6b0f0856-2452-4f15-a9d1-bb38e56f7674   | Mary Brown          | android      | 0101000020E6100000CCB56801DA9F52C00F80B8AB57992140     | 136.223.218.239 | false
+ 5692d2b1-09a3-4d1b-8870-df307a1e7fa7  | Mary Brown           | frontend    | 0101000020E6100000EF5696E82CB94C40F9669B1BD313F63F     | 2.54.158.78          | false
+ 08ac5cda-e7b0-4b1a-b0eb-dadf22171d04  | Mary Jones            | ios            | 0101000020E6100000749A05DA1D84624043C70E2A71FF4D40     | 82.166.92.172      | true
+ fab927a3-7713-4a55-a260-a007ecbbeffb    | Mary Brown            | android    | 0101000020E6100000A6D24F38BB665DC021AF0793E2774740     | 53.216.81.133      | false
+ 103dbd62-5dd6-4bbd-8160-a525ed0b5f2b  | James Johnson     | backend   | 0101000020E610000070D234281A806040DD7D8E8F16B94CC0    | 255.48.10.28        | false
+ bee49a57-6e75-4e57-9042-e664b404334f  | James Smith          | ios            | 0101000020E6100000239EEC6646476240F0879FFF1ECE4B40     | 131.216.127.23    | false
 
-Скрипт для заполнения базы 1000ю случайными записями: 
+
+Скрипт для заполнения базы 1000ю случайными записями: https://github.com/polinaboevaa/python-mobile-app/blob/main/script_homework.sql
 
 4. Используя EXPLAIN, выполните следующие запросы:
 
