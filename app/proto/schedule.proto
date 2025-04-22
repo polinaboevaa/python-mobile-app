@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package app.proto;
+
+service ScheduleService {
+  rpc AddSchedule (ScheduleModel) returns (ScheduleIdModel);
+  rpc GetSchedules (UserIdRequest) returns (SchedulesListResponse);
+  rpc GetScheduleById (ScheduleQuery) returns (ScheduleResponse);
+  rpc GetNextTakings (UserIdRequest) returns (DynamicSchedulesResponse);
+}
+
+// ==== Запросы ====
+
+message ScheduleModel {
+  int32 user_id = 1;
+  string medicine = 2;
+  int32 frequency = 3;
+  optional int32 duration_days = 4;
+}
+
+message UserIdRequest {
+  int32 user_id = 1;
+}
+
+message ScheduleQuery {
+  int32 user_id = 1;
+  int32 schedule_id = 2;
+}
+
+// ==== Ответы ====
+
+message ScheduleIdModel {
+  int32 schedule_id = 1;
+}
+
+message SchedulesListResponse {
+  repeated int32 active_schedule_ids = 1;
+}
+
+message FullScheduleResponse {
+  int32 schedule_id = 1;
+  string medicine = 2;
+  repeated string time_list = 3;
+}
+
+message MessageResponse {
+  string message = 1;
+}
+
+message ErrorResponse {
+  string detail = 1;
+}
+
+message ScheduleResponse {
+  oneof result {
+    FullScheduleResponse full_schedule = 1;
+    MessageResponse message = 2;
+  }
+}
+
+message DynamicSchedulesResponse {
+  map<string, TimeList> schedule_times = 1;
+}
+
+message TimeList {
+  repeated string times = 1;
+}

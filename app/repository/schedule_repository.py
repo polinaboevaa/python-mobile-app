@@ -1,10 +1,10 @@
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Any, Coroutine
 from datetime import datetime
 
 from app.database.database import Schedule
-from app.schemas.schemas import ScheduleModel
+from app.models.schedules import ScheduleModel
 from app.services.helper_service import HelperService
 
 
@@ -24,7 +24,7 @@ class ScheduleRepository:
         return schedule.schedule_id 
 
         
-    async def get_schedules_data_by_user_id(self, user_id: int) -> list[Tuple[int, Optional[int], datetime]]:
+    async def get_schedules_data_by_user_id(self, user_id: int) -> list[tuple[tuple[int, int | None, datetime], ...]]:
         query = select(Schedule.schedule_id, 
                        Schedule.duration_days, 
                        Schedule.start_of_reception

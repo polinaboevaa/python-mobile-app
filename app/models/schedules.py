@@ -2,19 +2,21 @@ from typing import Optional
 import re
 from pydantic import BaseModel, field_validator
 
+
 class ScheduleModel(BaseModel):
     user_id: int 
     medicine: str  
     frequency: int  
     duration_days: Optional[int] = None
 
-    class Config:
-        from_attributes = True
+    model_config = {
+        "from_attributes": True
+    }
 
     @field_validator("frequency")
     @classmethod
     def check_frequency(cls, value):
-        if value <= 0 or value > 56: # если частота больше чем 56 раз в сутки то расписание начинает генерироваться некорректно из-за округления
+        if value <= 0 or value > 56: # если частота больше чем 56 раз в сутки, то расписание начинает генерироваться некорректно из-за округления
             raise ValueError("некорректный frequency")
         return value
 
@@ -38,8 +40,8 @@ class ScheduleModel(BaseModel):
 
 
 class ScheduleIdModel(BaseModel):
-    schedule_id: int  
+    schedule_id: int
 
-    class Config:
-        from_attributes = True
-
+    model_config = {
+        "from_attributes": True
+    }

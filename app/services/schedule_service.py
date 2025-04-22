@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Coroutine
 
 from config import PERIOD, START_TIME, INTERVAL_HOURS
 from app.repository.schedule_repository import ScheduleRepository
 from app.services.helper_service import HelperService
 from app.services.user_service import UserService
-from app.schemas.schemas import ScheduleModel
+from app.models.schedules import ScheduleModel
 
 class ScheduleService:
     def __init__(self, schedule_repo: ScheduleRepository, user_service: UserService):
@@ -25,7 +25,7 @@ class ScheduleService:
         
         frequency, duration_days, start_of_reception, medicine = row  
 
-        if HelperService.is_schedule_active(start_of_reception, duration_days) == False:
+        if not HelperService.is_schedule_active(start_of_reception, duration_days):
             return {"message": "Расписание неактуально"}
 
         interval = timedelta(hours=INTERVAL_HOURS) / frequency  
@@ -37,7 +37,7 @@ class ScheduleService:
             "time_list": time_list
         }
 
-    async def get_schedules_in_period(self, user_id: int) -> Dict[str, List[str]]:
+    async def get_schedules_in_period(self, user_id: int) -> dict[str, str] | dict[Any, Any]:
         """
         Возвращает расписание приёмов лекарств для пользователя на указанный период.
         """
@@ -56,7 +56,7 @@ class ScheduleService:
         for row in rows:
             medicine, frequency, duration_days, start_of_reception = row
 
-            if HelperService.is_schedule_active(start_of_reception, duration_days) == False:
+            if not HelperService.is_schedule_active(start_of_reception, duration_days):
                 continue
             
             if duration_days is None or duration_days == 0:
@@ -87,7 +87,7 @@ class ScheduleService:
 
 
 
-    async def get_schedules_ids(self, user_id: int) -> Dict[str, List[int]]:
+    async def get_schedules_ids(self, user_id: int) -> dict[str, str] | dict[str, list[Any]]:
         """
         Возвращает ID актуальных расписаний пользователя.
         """
