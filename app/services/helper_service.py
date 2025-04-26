@@ -22,7 +22,7 @@ class HelperService:
         return now.replace(hour=8, minute=0, second=0, microsecond=0) 
 
     @staticmethod
-    def round_minutes(dt: datetime) -> datetime:
+    def round_minutes(dt: datetime) -> str:
         if isinstance(dt, str):  
             dt = datetime.strptime(dt)
 

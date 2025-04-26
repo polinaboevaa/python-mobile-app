@@ -1,3 +1,4 @@
+from loguru import logger
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Tuple, Optional, Any, Coroutine
@@ -13,15 +14,15 @@ class ScheduleRepository:
         self.db = db
 
     async def add_schedule(self, data: ScheduleModel):
-        schedule_dict = data.model_dump()  
-        start_of_reception = HelperService.get_start_of_reception() 
-        schedule = Schedule(**schedule_dict, start_of_reception=start_of_reception) 
+        schedule_dict = data.model_dump()
+        start_of_reception = HelperService.get_start_of_reception()
+        schedule = Schedule(**schedule_dict, start_of_reception=start_of_reception)
 
         self.db.add(schedule)
         await self.db.flush()
-        await self.db.commit() 
+        await self.db.commit()
 
-        return schedule.schedule_id 
+        return schedule.schedule_id
 
         
     async def get_schedules_data_by_user_id(self, user_id: int) -> list[tuple[tuple[int, int | None, datetime], ...]]:
