@@ -1,3 +1,4 @@
+import asyncio
 from uuid import uuid4
 
 from fastapi import FastAPI, Request
@@ -7,11 +8,22 @@ from app.api.router import router as schedule_router
 from app.core.logger import trace_id_var, get_logger
 import time
 
+from app.grpc.server import start_grpc_server
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await create_tables()
+    grpc_server_task = asyncio.create_task(start_grpc_server())
+
     yield
 
+    if grpc_server_task:
+        grpc_server_task.cancel()
+        try:
+            await grpc_server_task
+        except asyncio.CancelledError:
+            pass
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(schedule_router)
