@@ -1,3 +1,5 @@
+import grpc
+from app.models.schedules import ScheduleModel
 from app.proto import schedule_pb2_grpc, schedule_pb2
 from app.services.schedule_service import ScheduleService
 
@@ -6,13 +8,27 @@ class ScheduleServiceGRPC(schedule_pb2_grpc.ScheduleServiceServicer):
     def __init__(self, schedule_service: ScheduleService):
         self.service = schedule_service
 
-    async def AddSchedule(self, request: schedule_pb2.ScheduleModel, context) -> schedule_pb2.ScheduleIdModel:
-        schedule_id = await self.service.add_schedule(request)
-        return schedule_pb2.ScheduleIdModel(schedule_id=schedule_id)
+    async def AddSchedule(self, request: schedule_pb2.ScheduleModel, context):
+        try:
+            schedule_data = ScheduleModel(
+                user_id=request.user_id,
+                medicine=request.medicine,
+                frequency=request.frequency,
+                duration_days=request.duration_days or None,
+            )
+
+            schedule_id = await self.service.add_schedule(schedule_data)
+            return schedule_pb2.ScheduleIdModel(schedule_id=schedule_id)
+
+        except Exception as e:
+            context.set_details(f"Unexpected error: {str(e)}")
+            context.set_code(grpc.StatusCode.UNKNOWN)
+            return schedule_pb2.ScheduleIdModel()
 
     async def GetSchedules(self, request: schedule_pb2.UserIdRequest, context) -> schedule_pb2.SchedulesListResponse:
         result = await self.service.get_schedules_ids(request.user_id)
-        return schedule_pb2.SchedulesListResponse(active_schedule_ids=result)
+        return schedule_pb2.SchedulesListResponse(active_schedule_ids=result["active_schedule_ids"])
+
 
     async def GetScheduleById(self, request: schedule_pb2.ScheduleQuery, context) -> schedule_pb2.ScheduleResponse:
         schedule = await self.service.get_schedule_for_day(request.user_id, request.schedule_id)
