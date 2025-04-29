@@ -1,5 +1,7 @@
 import asyncio
 import grpc
+
+from app.grpc.logging_interceptor import LoggingInterceptor
 from app.grpc.service import ScheduleServiceGRPC
 from app.proto import schedule_pb2_grpc, schedule_pb2
 from app.database.database import get_async_db
@@ -14,7 +16,7 @@ async def start_grpc_server():
     try:
         schedule_service = make_schedule_service_for_grpc(db)
 
-        server = grpc.aio.server()
+        server = grpc.aio.server(interceptors=[LoggingInterceptor()])
         schedule_pb2_grpc.add_ScheduleServiceServicer_to_server(
             ScheduleServiceGRPC(schedule_service), server
         )

@@ -36,13 +36,19 @@ def file_sink(message):
     with open("logs/log.json", "a", encoding="utf-8") as f:
         f.write(json.dumps(base, ensure_ascii=False) + "\n")
 
+logger.add(
+    "logs/log.json",
+    level="DEBUG",
+    enqueue=True,
+    serialize=True,
+    filter=lambda record: record["extra"].get("server") == "grpc")
 
 
 def mask_sensitive_fields(data):
     def recursive_mask(obj):
         if isinstance(obj, dict):
             return {
-                k: "***MASKED***" if any(x in k.lower() for x in ["user_id"]) else recursive_mask(v)
+                k: "***MASKED***" if k in ("user_id", "userId") else recursive_mask(v)
                 for k, v in obj.items()
             }
         else:
@@ -58,4 +64,4 @@ logger.remove()
 logger.add(
     file_sink,
     level="DEBUG",
-    enqueue=True,)
+    enqueue=True)

@@ -43,6 +43,7 @@ async def log_requests(request: Request, call_next):
     logger_ctx = get_logger()
 
     request_data = {
+        "server": "rest",
         "type": "request",
         "method": request.method,
         "url": str(request.url),
@@ -56,6 +57,7 @@ async def log_requests(request: Request, call_next):
     process_time = time.time() - start_time
 
     response_data = {
+        "server": "rest",
         "type": "response",
         "status_code": response.status_code,
         "duration": round(process_time, 4),
