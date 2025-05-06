@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Dict, Any
 
-from app.config import PERIOD, START_TIME, INTERVAL_HOURS
+from app.settings import get_settings
 from app.integrations.schedule_repository import ScheduleRepository
 from app.services.helper_service import HelperService
 from app.services.user_service import UserService
@@ -29,8 +29,8 @@ class ScheduleService:
                 logger.bind(user_id=user_id, schedule_id=schedule_id).warning("The schedule is not relevant")
                 return {"message": "Расписание неактуально"}
 
-            interval = timedelta(hours=INTERVAL_HOURS) / frequency
-            time_list = [HelperService.round_minutes(datetime.combine(datetime.today(), START_TIME) + interval * i) for i in range(frequency)]
+            interval = timedelta(hours=get_settings().INTERVAL_HOURS) / frequency
+            time_list = [HelperService.round_minutes(datetime.combine(datetime.today(), get_settings().START_TIME) + interval * i) for i in range(frequency)]
             logger.bind(user_id=user_id, schedule_id=schedule_id).debug("The schedule has been formed")
 
             return {
@@ -46,7 +46,7 @@ class ScheduleService:
     async def get_schedules_in_period(self, user_id: int) -> dict[str, str] | dict[Any, Any]:
         try:
             from_date = datetime.now()
-            to_date = from_date + PERIOD
+            to_date = from_date + get_settings().PERIOD
 
             await self.user_service.check_user_existence(user_id)
             get_logger().bind(user_id=user_id).debug("Request for a list of schedules for a period for user")
@@ -70,7 +70,7 @@ class ScheduleService:
                 else:
                     end_date = start_of_reception + timedelta(days=duration_days)
 
-                interval = timedelta(hours=INTERVAL_HOURS) / frequency
+                interval = timedelta(hours=get_settings().INTERVAL_HOURS) / frequency
                 daily_times = [HelperService.round_minutes(start_of_reception + interval * i) for i in range(frequency)]
 
                 medicine_schedule = []
@@ -131,8 +131,8 @@ class ScheduleService:
             get_logger().bind(user_id=data.user_id).error(f"An error occurred when adding a schedule: {str(e)}")
             raise e
 
-    
-            
+
+
 
 
 
