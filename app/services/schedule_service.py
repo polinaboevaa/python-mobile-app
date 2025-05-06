@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from typing import Dict, Any
 
-from config import PERIOD, START_TIME, INTERVAL_HOURS
-from app.repository.schedule_repository import ScheduleRepository
+from app.config import PERIOD, START_TIME, INTERVAL_HOURS
+from app.integrations.schedule_repository import ScheduleRepository
 from app.services.helper_service import HelperService
 from app.services.user_service import UserService
 from app.models.schedules import ScheduleModel

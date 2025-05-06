@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Query
 
 from app.models.responses import DynamicSchedulesResponse
 from app.services.schedule_service import ScheduleService
-from dependencies import make_schedule_service
+from app.dependencies import make_schedule_service
 from app.generated import ScheduleIdModel, ErrorResponse, FullScheduleResponse, MessageResponse, ScheduleModel, SchedulesListResponse
 
 router = APIRouter()

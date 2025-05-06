@@ -1,5 +1,5 @@
-from app.repository.schedule_repository import ScheduleRepository
-from app.repository.user_repository import UserRepository
+from app.integrations.schedule_repository import ScheduleRepository
+from app.integrations.user_repository import UserRepository
 from app.database.database import get_async_db  
 from app.services.schedule_service import ScheduleService
 from app.services.user_service import UserService

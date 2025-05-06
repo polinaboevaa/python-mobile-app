@@ -4,7 +4,7 @@ import pytz
 from loguru import logger
 import json
 from datetime import datetime
-from config import TIMEZONE
+from app.config import TIMEZONE
 
 TZ = pytz.timezone(TIMEZONE)
 

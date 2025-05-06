@@ -1,7 +1,5 @@
-from loguru import logger
 from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Tuple, Optional, Any, Coroutine
 from datetime import datetime
 
 from app.database.database import Schedule

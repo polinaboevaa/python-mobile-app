@@ -1,6 +1,7 @@
 import grpc
 from app.models.schedules import ScheduleModel
-from app.proto import schedule_pb2_grpc, schedule_pb2
+from app.grpc.proto import schedule_pb2_grpc
+from app.grpc.proto import schedule_pb2
 from app.services.schedule_service import ScheduleService
 
 

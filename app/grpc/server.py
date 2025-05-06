@@ -3,7 +3,8 @@ import grpc
 
 from app.grpc.logging_interceptor import LoggingInterceptor
 from app.grpc.service import ScheduleServiceGRPC
-from app.proto import schedule_pb2_grpc, schedule_pb2
+from app.grpc.proto import schedule_pb2_grpc
+from app.grpc.proto import schedule_pb2
 from app.database.database import get_async_db
 from app.grpc.dependencies import make_schedule_service_for_grpc
 from grpc_reflection.v1alpha import reflection
