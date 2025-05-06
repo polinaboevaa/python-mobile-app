@@ -4,9 +4,10 @@ import pytz
 from loguru import logger
 import json
 from datetime import datetime
-from app.config import TIMEZONE
 
-TZ = pytz.timezone(TIMEZONE)
+from app.settings import get_settings
+
+TZ = pytz.timezone(get_settings().TIMEZONE)
 
 trace_id_var: ContextVar[str | None] = ContextVar("trace_id", default=None)
 

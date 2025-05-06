@@ -28,13 +28,11 @@ dependencies = [
     "loguru==0.7.3",
     "pytz==2025.2",
     "grpcio-reflection==1.71.0",
+    "pydantic-settings==2.9.1"
 ]
 
 [tool.setuptools]
 packages = ["app"]
-
-[tool.uv]
-# Кэш и изоляция по умолчанию
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
