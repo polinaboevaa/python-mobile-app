@@ -2,15 +2,11 @@ from typing import Optional, AsyncGenerator
 from datetime import datetime
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker, relationship
-from sqlalchemy import String, DateTime, Integer, ForeignKey, event
+from sqlalchemy import String, DateTime, Integer, ForeignKey
 
-engine = create_async_engine("sqlite+aiosqlite:///medicineSchedule.db")
+from app.settings import get_settings
 
-@event.listens_for(engine.sync_engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
+engine = create_async_engine(get_settings().database_url)
 
 async_session = sessionmaker(
     bind=engine,

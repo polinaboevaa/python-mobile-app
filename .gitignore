@@ -1,6 +1,6 @@
-medicineSchedule.db
 .idea
 __pycache__
 logs/*
 !logs/.gitkeep
 /.venv/
+.env
