@@ -1,20 +1,14 @@
 from typing import Optional, AsyncGenerator
 from datetime import datetime
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker, relationship
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, DateTime, Integer, ForeignKey
 
 from app.settings import get_settings
 
 engine = create_async_engine(get_settings().database_url)
 
-async_session = sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-    autocommit=False,
-    autoflush=False
-)
+async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
@@ -46,8 +40,7 @@ class Schedule(Model):
 
     medicine: Mapped[str] = mapped_column(String, nullable=False)
     frequency: Mapped[int] = mapped_column(Integer, nullable=False)  # количество приёмов в день
-    duration_days: Mapped[Optional[int]] = mapped_column(Integer, nullable=True,
-                                                         default=None)  # если 0 — пожизненный прием
+    duration_days: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, default=None)  # если 0 — пожизненный прием
     start_of_reception: Mapped[datetime] = mapped_column(DateTime, nullable=False)  # начало приема
 
     user: Mapped["User"] = relationship(
@@ -55,14 +48,3 @@ class Schedule(Model):
         back_populates="schedules",
         passive_deletes=True
     )
-
-
-
-async def create_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Model.metadata.create_all)
-
-
-async def delete_tables():
-    async with engine.begin() as conn:
-        await conn.run_sync(Model.metadata.drop_all)
