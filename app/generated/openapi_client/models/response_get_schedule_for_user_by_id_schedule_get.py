@@ -19,8 +19,8 @@ import pprint
 import re  # noqa: F401
 from pydantic import BaseModel, ConfigDict, Field, StrictStr, ValidationError, field_validator
 from typing import Optional
-from openapi_client.models.full_schedule_response import FullScheduleResponse
-from openapi_client.models.message_response import MessageResponse
+from .full_schedule_response import FullScheduleResponse
+from .message_response import MessageResponse
 from typing import Union, Any, List, Set, TYPE_CHECKING, Optional, Dict
 from typing_extensions import Literal, Self
 from pydantic import Field

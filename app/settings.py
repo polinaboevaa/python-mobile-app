@@ -3,7 +3,7 @@ from datetime import timedelta, time
 from functools import lru_cache
 
 class AppSettings(BaseSettings):
-    PERIOD: timedelta = timedelta(hours=6)
+    PERIOD: timedelta = timedelta(hours=96)
     INTERVAL_HOURS: int = 14
     START_TIME: time = time(8, 0)
     TIMEZONE: str = "Europe/Kaliningrad"

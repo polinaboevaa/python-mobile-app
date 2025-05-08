@@ -2,10 +2,9 @@ from typing import Union
 
 from fastapi import APIRouter, Depends, Query
 
-from app.models.responses import DynamicSchedulesResponse
 from app.services.schedule_service import ScheduleService
 from app.dependencies import make_schedule_service
-from app.generated import ScheduleIdModel, ErrorResponse, FullScheduleResponse, MessageResponse, ScheduleModel, SchedulesListResponse
+from app.generated import ScheduleIdModel, ErrorResponse, FullScheduleResponse, MessageResponse, ScheduleModel, SchedulesListResponse, ResponseGetScheduleForUserByIdScheduleGet
 
 router = APIRouter()
 
@@ -23,7 +22,7 @@ async def get_schedules(user_id: int = Query(..., gt=0), schedule_service: Sched
 async def get_schedule_for_user_by_id(schedule_id: int = Query(..., gt=0), user_id: int = Query(..., gt=0),schedule_service: ScheduleService = Depends(make_schedule_service)):
     return await schedule_service.get_schedule_for_day(user_id, schedule_id)
 
-@router.get("/next_takings", response_model=DynamicSchedulesResponse, responses={ 404: {"model": ErrorResponse}})
+@router.get("/next_takings", responses={ 404: {"model": ErrorResponse}})
 async def get_schedule_for_period(user_id: int = Query(..., gt=0), schedule_service: ScheduleService = Depends(make_schedule_service)):
     return await schedule_service.get_schedules_in_period(user_id)
 
@@ -31,5 +30,5 @@ async def get_schedule_for_period(user_id: int = Query(..., gt=0), schedule_serv
 
 
 
-    
+
 

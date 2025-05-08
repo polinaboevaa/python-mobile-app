@@ -4,3 +4,4 @@ from .openapi_client.models.full_schedule_response import FullScheduleResponse
 from .openapi_client.models.message_response import MessageResponse
 from .openapi_client.models.schedule_model import ScheduleModel
 from .openapi_client.models.schedules_list_response import SchedulesListResponse
+from .openapi_client.models.response_get_schedule_for_user_by_id_schedule_get import ResponseGetScheduleForUserByIdScheduleGet
