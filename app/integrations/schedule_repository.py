@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 
 from app.database.database import Schedule
-from app.models.schedules import ScheduleModel
+from app.generated import ScheduleModel
 from app.services.helper_service import HelperService
 
 
@@ -22,38 +22,38 @@ class ScheduleRepository:
 
         return schedule.schedule_id
 
-        
+
     async def get_schedules_data_by_user_id(self, user_id: int) -> list[tuple[tuple[int, int | None, datetime], ...]]:
-        query = select(Schedule.schedule_id, 
-                       Schedule.duration_days, 
+        query = select(Schedule.schedule_id,
+                       Schedule.duration_days,
                        Schedule.start_of_reception
                        ).where(Schedule.user_id == user_id)
-        
+
         result = await self.db.execute(query)
-        rows = result.fetchall()  
-        
-        return [tuple(row) for row in rows]  
-    
+        rows = result.fetchall()
+
+        return [tuple(row) for row in rows]
+
 
     async def get_schedule_data_by_schedule_id(self, user_id: int, schedule_id: int):
 
-        query = select(Schedule.frequency, 
-                        Schedule.duration_days, 
-                        Schedule.start_of_reception, 
+        query = select(Schedule.frequency,
+                        Schedule.duration_days,
+                        Schedule.start_of_reception,
                         Schedule.medicine
                         ).where (and_(Schedule.user_id == user_id, Schedule.schedule_id == schedule_id))
-        
+
         result = await self.db.execute(query)
         row = result.first()
 
         return row
-    
+
 
     async def get_schedules_by_user_id(self, user_id: int):
 
-        query = select(Schedule.medicine, 
-                        Schedule.frequency, 
-                        Schedule.duration_days, 
+        query = select(Schedule.medicine,
+                        Schedule.frequency,
+                        Schedule.duration_days,
                         Schedule.start_of_reception
                         ).where(Schedule.user_id == user_id)
 
@@ -61,9 +61,9 @@ class ScheduleRepository:
         rows = result.fetchall()
 
         return rows
-    
-    
-    
+
+
+
 
 
 

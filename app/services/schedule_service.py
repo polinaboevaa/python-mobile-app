@@ -5,7 +5,7 @@ from app.settings import get_settings
 from app.integrations.schedule_repository import ScheduleRepository
 from app.services.helper_service import HelperService
 from app.services.user_service import UserService
-from app.models.schedules import ScheduleModel
+from app.generated import ScheduleModel
 from app.core.logger import logger, get_logger
 
 
