@@ -9,7 +9,6 @@ service ScheduleService {
   rpc GetNextTakings (UserIdRequest) returns (DynamicSchedulesResponse);
 }
 
-// ==== Запросы ====
 
 message ScheduleModel {
   int32 user_id = 1;
@@ -27,7 +26,6 @@ message ScheduleQuery {
   int32 schedule_id = 2;
 }
 
-// ==== Ответы ====
 
 message ScheduleIdModel {
   int32 schedule_id = 1;

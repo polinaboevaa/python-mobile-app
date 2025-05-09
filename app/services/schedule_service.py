@@ -43,58 +43,58 @@ class ScheduleService:
             logger.bind(user_id=user_id, schedule_id=schedule_id).error(f"An error occurred when receiving the schedule: {str(e)}")
             raise e
 
-    async def get_schedules_in_period(self, user_id: int) -> dict[str, str] | dict[Any, Any]:
+    async def get_schedules_in_period(self, user_id: int) -> dict[str, Any]:
         try:
             from_date = datetime.now()
             to_date = from_date + get_base_settings().PERIOD
 
             await self.user_service.check_user_existence(user_id)
-            get_logger().bind(user_id=user_id).debug("Request for a list of schedules for a period for user")
+            get_logger().bind(user_id=user_id).debug("Request schedules for period")
 
             rows = await self.schedule_repo.get_schedules_by_user_id(user_id)
 
             if not rows:
-                get_logger().bind(user_id=user_id).error("No schedule found")
-                return {"message": "Нет расписаний для пользователя"}
+                return {
+                    'message': "Нет расписаний для пользователя",
+                    'data': {}
+                }
 
-            schedule_list = {}
-
+            schedule_data = {}
             for row in rows:
                 medicine, frequency, duration_days, start_of_reception = row
 
                 if not HelperService.is_schedule_active(start_of_reception, duration_days):
                     continue
 
-                if duration_days is None or duration_days == 0:
-                    end_date = to_date
-                else:
-                    end_date = start_of_reception + timedelta(days=duration_days)
-
                 interval = timedelta(hours=get_base_settings().INTERVAL_HOURS) / frequency
                 daily_times = [HelperService.round_minutes(start_of_reception + interval * i) for i in range(frequency)]
 
                 medicine_schedule = []
                 current_date = max(start_of_reception, from_date)
+                end_date = to_date if duration_days is None or duration_days == 0 else start_of_reception + timedelta(days=duration_days)
 
                 while current_date <= end_date and current_date <= to_date:
                     for t in daily_times:
                         time_obj = datetime.strptime(t, "%H:%M").time()
                         intake_time = datetime.combine(current_date.date(), time_obj)
-
                         if from_date <= intake_time <= to_date:
                             medicine_schedule.append(f"{intake_time.strftime('%H:%M %d.%m')}")
-
                     current_date += timedelta(days=1)
 
                 if medicine_schedule:
-                    schedule_list[medicine] = medicine_schedule
+                    schedule_data[medicine] = medicine_schedule
 
-            get_logger().bind(user_id=user_id).debug("Schedules list has been received")
-            return schedule_list
+            return {
+                'message': "Активные расписания для пользователя" if schedule_data else "Нет активных расписаний",
+                'data': schedule_data
+            }
 
         except Exception as e:
-            get_logger().bind(user_id=user_id).error(f"An error occurred when receiving the schedule list: {str(e)}")
-            raise e
+            get_logger().bind(user_id=user_id).error(f"Error: {str(e)}")
+            return {
+                'message': f"Ошибка сервера: {str(e)}",
+                'data': {}
+            }
 
 
 

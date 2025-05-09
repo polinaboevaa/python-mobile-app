@@ -36,6 +36,19 @@ class ScheduleServiceGRPC(schedule_pb2_grpc.ScheduleServiceServicer):
         return schedule_pb2.ScheduleResponse(full_schedule=schedule)
 
     async def GetNextTakings(self, request: schedule_pb2.UserIdRequest, context) -> schedule_pb2.DynamicSchedulesResponse:
-        next_takings = await self.service.get_schedules_in_period(request.user_id)
-        return schedule_pb2.DynamicSchedulesResponse(schedule_times=next_takings)
+        try:
+            result = await self.service.get_schedules_in_period(request.user_id)
+
+            schedule_times_map = {
+                medicine: schedule_pb2.TimeList(times=times)
+                for medicine, times in result["data"].items()
+            }
+
+            return schedule_pb2.DynamicSchedulesResponse(schedule_times=schedule_times_map)
+
+        except Exception as e:
+            context.set_details(f"Unexpected error: {str(e)}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            return schedule_pb2.DynamicSchedulesResponse()
+
 
