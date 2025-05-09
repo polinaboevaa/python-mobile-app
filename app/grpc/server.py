@@ -3,16 +3,14 @@ import grpc
 from app.database.session import get_db_session
 from app.grpc.logging_interceptor import LoggingInterceptor
 from app.grpc.service import ScheduleServiceGRPC
-from app.grpc.proto import schedule_pb2_grpc, schedule_pb2
+from app.grpc.generated import schedule_pb2_grpc, schedule_pb2
 from app.grpc.dependencies import make_schedule_service_for_grpc
 from grpc_reflection.v1alpha import reflection
 
 
 async def start_grpc_server():
-    # Используем тот же генератор сессий
     db_generator = get_db_session()
 
-    # Получаем сессию из генератора
     db = await anext(db_generator)
 
     try:
@@ -43,6 +41,6 @@ async def start_grpc_server():
         print(f"gRPC server crashed: {str(e)}")
     finally:
         try:
-            await anext(db_generator)  # Завершаем генератор
+            await anext(db_generator)
         except StopAsyncIteration:
             pass

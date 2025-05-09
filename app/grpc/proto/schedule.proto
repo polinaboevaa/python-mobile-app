@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package app.proto;
+package app.grpc.generated;
 
 service ScheduleService {
   rpc AddSchedule (ScheduleModel) returns (ScheduleIdModel);
@@ -57,7 +57,8 @@ message ScheduleResponse {
 }
 
 message DynamicSchedulesResponse {
-  map<string, TimeList> schedule_times = 1;
+    string message = 1;
+    map<string, TimeList> schedule_times = 2;
 }
 
 message TimeList {

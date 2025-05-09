@@ -1,7 +1,7 @@
 import grpc
 from app.generated import ScheduleModel
-from app.grpc.proto import schedule_pb2_grpc
-from app.grpc.proto import schedule_pb2
+from app.grpc.generated import schedule_pb2_grpc
+from app.grpc.generated import schedule_pb2
 from app.services.schedule_service import ScheduleService
 
 
@@ -35,7 +35,7 @@ class ScheduleServiceGRPC(schedule_pb2_grpc.ScheduleServiceServicer):
         schedule = await self.service.get_schedule_for_day(request.user_id, request.schedule_id)
         return schedule_pb2.ScheduleResponse(full_schedule=schedule)
 
-    async def GetNextTakings(self, request: schedule_pb2.UserIdRequest, context) -> schedule_pb2.DynamicSchedulesResponse:
+    async def GetNextTakings(self, request: schedule_pb2.UserIdRequest,context) -> schedule_pb2.DynamicSchedulesResponse:
         try:
             result = await self.service.get_schedules_in_period(request.user_id)
 
@@ -44,11 +44,13 @@ class ScheduleServiceGRPC(schedule_pb2_grpc.ScheduleServiceServicer):
                 for medicine, times in result["data"].items()
             }
 
-            return schedule_pb2.DynamicSchedulesResponse(schedule_times=schedule_times_map)
+            return schedule_pb2.DynamicSchedulesResponse(
+                message=result["message"],
+                schedule_times=schedule_times_map
+            )
 
         except Exception as e:
             context.set_details(f"Unexpected error: {str(e)}")
             context.set_code(grpc.StatusCode.INTERNAL)
             return schedule_pb2.DynamicSchedulesResponse()
-
 
