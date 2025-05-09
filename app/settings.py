@@ -2,29 +2,40 @@ from pydantic_settings import BaseSettings
 from datetime import timedelta, time
 from functools import lru_cache
 
-class AppSettings(BaseSettings):
+class BaseAppSettings(BaseSettings):
     PERIOD: timedelta = timedelta(hours=96)
     INTERVAL_HOURS: int = 14
     START_TIME: time = time(8, 0)
     TIMEZONE: str = "Europe/Kaliningrad"
 
-    DB_HOST: str
-    DB_PORT: int
-    DB_USER: str
-    DB_PASS: str
-    DB_NAME: str
+    class Config:
+        env_file = ".env.core"
+        env_prefix = "APP_CORE_"
+
+
+class DatabaseSettings(BaseSettings):
+    HOST: str
+    PORT: int
+    USER: str
+    PASS: str
+    NAME: str
+
+    class Config:
+        env_file = ".env"
+        env_prefix = "APP_DB_"
 
     @property
     def database_url(self) -> str:
         return (
-            f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}"
-            f"@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+            f"postgresql+asyncpg://{self.USER}:{self.PASS}"
+            f"@{self.HOST}:{self.PORT}/{self.NAME}"
         )
 
-    class Config:
-        env_file = ".env"
-        env_prefix = "APP_"
+@lru_cache
+def get_base_settings() -> BaseAppSettings:
+    return BaseAppSettings()
 
 @lru_cache
-def get_settings() -> AppSettings:
-    return AppSettings()
+def get_settings() -> DatabaseSettings:
+    return DatabaseSettings()
+

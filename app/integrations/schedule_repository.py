@@ -2,7 +2,7 @@ from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 
-from app.database.database import Schedule
+from app.database.models import Schedule
 from app.generated import ScheduleModel
 from app.services.helper_service import HelperService
 

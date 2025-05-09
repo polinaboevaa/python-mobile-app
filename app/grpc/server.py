@@ -1,18 +1,19 @@
 import asyncio
 import grpc
-
+from app.database.session import get_db_session
 from app.grpc.logging_interceptor import LoggingInterceptor
 from app.grpc.service import ScheduleServiceGRPC
-from app.grpc.proto import schedule_pb2_grpc
-from app.grpc.proto import schedule_pb2
-from app.database.database import get_async_db
+from app.grpc.proto import schedule_pb2_grpc, schedule_pb2
 from app.grpc.dependencies import make_schedule_service_for_grpc
 from grpc_reflection.v1alpha import reflection
 
-async def start_grpc_server():
 
-    db_gen = get_async_db()
-    db = await anext(db_gen)
+async def start_grpc_server():
+    # Используем тот же генератор сессий
+    db_generator = get_db_session()
+
+    # Получаем сессию из генератора
+    db = await anext(db_generator)
 
     try:
         schedule_service = make_schedule_service_for_grpc(db)
@@ -28,7 +29,6 @@ async def start_grpc_server():
         )
 
         reflection.enable_server_reflection(SERVICE_NAMES, server)
-
         server.add_insecure_port('[::]:50051')
         await server.start()
         print("gRPC async server started on port 50051...")
@@ -39,5 +39,10 @@ async def start_grpc_server():
             print("gRPC server cancellation received, shutting down gracefully...")
             await server.stop(grace=5)
             raise
+    except Exception as e:
+        print(f"gRPC server crashed: {str(e)}")
     finally:
-        await db_gen.aclose()
+        try:
+            await anext(db_generator)  # Завершаем генератор
+        except StopAsyncIteration:
+            pass

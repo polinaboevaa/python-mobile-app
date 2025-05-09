@@ -5,9 +5,9 @@ from loguru import logger
 import json
 from datetime import datetime
 
-from app.settings import get_settings
+from app.settings import get_settings, get_base_settings
 
-TZ = pytz.timezone(get_settings().TIMEZONE)
+TZ = pytz.timezone(get_base_settings().TIMEZONE)
 
 trace_id_var: ContextVar[str | None] = ContextVar("trace_id", default=None)
 
