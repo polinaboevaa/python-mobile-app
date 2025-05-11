@@ -1,3 +1,5 @@
+import os
+
 from pydantic_settings import BaseSettings
 from datetime import timedelta, time
 from functools import lru_cache
@@ -23,6 +25,7 @@ class DatabaseSettings(BaseSettings):
     class Config:
         env_file = ".env"
         env_prefix = "APP_DB_"
+        extra = "ignore"
 
     @property
     def database_url(self) -> str:
@@ -30,6 +33,11 @@ class DatabaseSettings(BaseSettings):
             f"postgresql+asyncpg://{self.USER}:{self.PASS}"
             f"@{self.HOST}:{self.PORT}/{self.NAME}"
         )
+
+class TestDatabaseSettings(DatabaseSettings):
+    class Config:
+        env_file = ".env.test"
+        env_prefix = "APP_DB_"
 
 @lru_cache
 def get_base_settings() -> BaseAppSettings:

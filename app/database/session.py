@@ -1,14 +1,15 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from app.settings import get_settings
-from typing import AsyncGenerator
+from app.settings import get_settings, DatabaseSettings
 
-engine = create_async_engine(get_settings().database_url)
+def get_db_session(settings: DatabaseSettings = None):
+    if settings is None:
+        settings = get_settings()  # по умолчанию берёт из .env
 
-async_session_factory = async_sessionmaker(engine, expire_on_commit=False)
+    engine = create_async_engine(settings.database_url, echo=False, future=True)
+    async_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
-async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_factory() as session:
-        try:
+    async def get_session():
+        async with async_session() as session:
             yield session
-        finally:
-            await session.close()
+
+    return get_session()

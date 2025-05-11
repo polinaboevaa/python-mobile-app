@@ -7,17 +7,16 @@ from app.grpc.generated import schedule_pb2_grpc, schedule_pb2
 from app.grpc.dependencies import make_schedule_service_for_grpc
 from grpc_reflection.v1alpha import reflection
 
-from app.settings import get_base_settings
+from app.settings import DatabaseSettings, BaseAppSettings
 
 
-async def start_grpc_server():
-    db_generator = get_db_session()
-
+async def start_grpc_server(db_settings: DatabaseSettings, app_settings: BaseAppSettings):
+    print("[DEBUG] DB URL:", db_settings.database_url)  # <-- Добавь эту строку
+    db_generator = get_db_session(db_settings)
     db = await anext(db_generator)
 
     try:
-        settings = get_base_settings()
-        schedule_service = make_schedule_service_for_grpc(db, settings)
+        schedule_service = make_schedule_service_for_grpc(db, app_settings)
 
         server = grpc.aio.server(interceptors=[LoggingInterceptor()])
         schedule_pb2_grpc.add_ScheduleServiceServicer_to_server(
@@ -47,3 +46,4 @@ async def start_grpc_server():
             await anext(db_generator)
         except StopAsyncIteration:
             pass
+
