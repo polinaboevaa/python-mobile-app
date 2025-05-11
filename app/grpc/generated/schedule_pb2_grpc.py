@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-from . import schedule_pb2 as schedule__pb2
+from app.grpc.generated import schedule_pb2 as schedule__pb2
 
 GRPC_GENERATED_VERSION = '1.71.0'
 GRPC_VERSION = grpc.__version__
@@ -35,22 +35,22 @@ class ScheduleServiceStub(object):
             channel: A grpc.Channel.
         """
         self.AddSchedule = channel.unary_unary(
-                '/app.proto.ScheduleService/AddSchedule',
+                '/app.grpc.generated.ScheduleService/AddSchedule',
                 request_serializer=schedule__pb2.ScheduleModel.SerializeToString,
                 response_deserializer=schedule__pb2.ScheduleIdModel.FromString,
                 _registered_method=True)
         self.GetSchedules = channel.unary_unary(
-                '/app.proto.ScheduleService/GetSchedules',
+                '/app.grpc.generated.ScheduleService/GetSchedules',
                 request_serializer=schedule__pb2.UserIdRequest.SerializeToString,
                 response_deserializer=schedule__pb2.SchedulesListResponse.FromString,
                 _registered_method=True)
         self.GetScheduleById = channel.unary_unary(
-                '/app.proto.ScheduleService/GetScheduleById',
+                '/app.grpc.generated.ScheduleService/GetScheduleById',
                 request_serializer=schedule__pb2.ScheduleQuery.SerializeToString,
                 response_deserializer=schedule__pb2.ScheduleResponse.FromString,
                 _registered_method=True)
         self.GetNextTakings = channel.unary_unary(
-                '/app.proto.ScheduleService/GetNextTakings',
+                '/app.grpc.generated.ScheduleService/GetNextTakings',
                 request_serializer=schedule__pb2.UserIdRequest.SerializeToString,
                 response_deserializer=schedule__pb2.DynamicSchedulesResponse.FromString,
                 _registered_method=True)
@@ -108,9 +108,9 @@ def add_ScheduleServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'app.proto.ScheduleService', rpc_method_handlers)
+            'app.grpc.generated.ScheduleService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
-    server.add_registered_method_handlers('app.proto.ScheduleService', rpc_method_handlers)
+    server.add_registered_method_handlers('app.grpc.generated.ScheduleService', rpc_method_handlers)
 
 
  # This class is part of an EXPERIMENTAL API.
@@ -131,7 +131,7 @@ class ScheduleService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/app.proto.ScheduleService/AddSchedule',
+            '/app.grpc.generated.ScheduleService/AddSchedule',
             schedule__pb2.ScheduleModel.SerializeToString,
             schedule__pb2.ScheduleIdModel.FromString,
             options,
@@ -158,7 +158,7 @@ class ScheduleService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/app.proto.ScheduleService/GetSchedules',
+            '/app.grpc.generated.ScheduleService/GetSchedules',
             schedule__pb2.UserIdRequest.SerializeToString,
             schedule__pb2.SchedulesListResponse.FromString,
             options,
@@ -185,7 +185,7 @@ class ScheduleService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/app.proto.ScheduleService/GetScheduleById',
+            '/app.grpc.generated.ScheduleService/GetScheduleById',
             schedule__pb2.ScheduleQuery.SerializeToString,
             schedule__pb2.ScheduleResponse.FromString,
             options,
@@ -212,7 +212,7 @@ class ScheduleService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/app.proto.ScheduleService/GetNextTakings',
+            '/app.grpc.generated.ScheduleService/GetNextTakings',
             schedule__pb2.UserIdRequest.SerializeToString,
             schedule__pb2.DynamicSchedulesResponse.FromString,
             options,
