@@ -1,18 +1,20 @@
 from datetime import datetime, timedelta
 from typing import Dict, Any
 
-from app.settings import get_base_settings
 from app.integrations.schedule_repository import ScheduleRepository
 from app.services.helper_service import HelperService
 from app.services.user_service import UserService
 from app.generated import ScheduleModel
 from app.core.logger import logger, get_logger
+from app.settings import BaseAppSettings
 
 
 class ScheduleService:
-    def __init__(self, schedule_repo: ScheduleRepository, user_service: UserService):
+    def __init__(self, schedule_repo: ScheduleRepository, user_service: UserService, helper_service: HelperService, settings: BaseAppSettings):
         self.schedule_repo = schedule_repo
         self.user_service = user_service
+        self.helper_service = helper_service
+        self.settings = settings
 
     async def get_schedule_for_day(self, user_id: int, schedule_id: int) -> Dict[str, Any]:
         try:
@@ -25,12 +27,14 @@ class ScheduleService:
                 return {"message": "Нет расписаний для пользователя"}
 
             frequency, duration_days, start_of_reception, medicine = row
-            if not HelperService.is_schedule_active(start_of_reception, duration_days):
+            if not self.helper_service.is_schedule_active(start_of_reception, duration_days):
                 logger.bind(user_id=user_id, schedule_id=schedule_id).warning("The schedule is not relevant")
                 return {"message": "Расписание неактуально"}
 
-            interval = timedelta(hours=get_base_settings().INTERVAL_HOURS) / frequency
-            time_list = [HelperService.round_minutes(datetime.combine(datetime.today(), get_base_settings().START_TIME) + interval * i) for i in range(frequency)]
+            if frequency==0:
+                return {"message": "Некорректное расписание"}
+            interval = timedelta(hours=self.settings.INTERVAL_HOURS) / frequency
+            time_list = [self.helper_service.round_minutes(datetime.combine(datetime.today(), self.settings.START_TIME) + interval * i) for i in range(frequency)]
             logger.bind(user_id=user_id, schedule_id=schedule_id).debug("The schedule has been formed")
 
             return {
@@ -46,7 +50,7 @@ class ScheduleService:
     async def get_schedules_in_period(self, user_id: int) -> dict[str, Any]:
         try:
             from_date = datetime.now()
-            to_date = from_date + get_base_settings().PERIOD
+            to_date = from_date + self.settings.PERIOD
 
             await self.user_service.check_user_existence(user_id)
             get_logger().bind(user_id=user_id).debug("Request schedules for period")
@@ -63,11 +67,16 @@ class ScheduleService:
             for row in rows:
                 medicine, frequency, duration_days, start_of_reception = row
 
-                if not HelperService.is_schedule_active(start_of_reception, duration_days):
+                if not self.helper_service.is_schedule_active(start_of_reception, duration_days):
                     continue
 
-                interval = timedelta(hours=get_base_settings().INTERVAL_HOURS) / frequency
-                daily_times = [HelperService.round_minutes(start_of_reception + interval * i) for i in range(frequency)]
+                if frequency == 0:
+                    return {
+                        'message': "Некорректное расписание",
+                        'data': {}
+                    }
+                interval = timedelta(hours=self.settings.INTERVAL_HOURS) / frequency
+                daily_times = [self.helper_service.round_minutes(start_of_reception + interval * i) for i in range(frequency)]
 
                 medicine_schedule = []
                 current_date = max(start_of_reception, from_date)
@@ -110,7 +119,7 @@ class ScheduleService:
 
             schedule_ids = []
             for schedule_id, duration_days, start_of_reception in rows:
-                if HelperService.is_schedule_active(start_of_reception, duration_days):
+                if self.helper_service.is_schedule_active(start_of_reception, duration_days):
                     schedule_ids.append(schedule_id)
 
             get_logger().bind(user_id=user_id).debug("Schedules ids has been received")

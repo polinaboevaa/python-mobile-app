@@ -7,6 +7,8 @@ from app.grpc.generated import schedule_pb2_grpc, schedule_pb2
 from app.grpc.dependencies import make_schedule_service_for_grpc
 from grpc_reflection.v1alpha import reflection
 
+from app.settings import get_base_settings
+
 
 async def start_grpc_server():
     db_generator = get_db_session()
@@ -14,7 +16,8 @@ async def start_grpc_server():
     db = await anext(db_generator)
 
     try:
-        schedule_service = make_schedule_service_for_grpc(db)
+        settings = get_base_settings()
+        schedule_service = make_schedule_service_for_grpc(db, settings)
 
         server = grpc.aio.server(interceptors=[LoggingInterceptor()])
         schedule_pb2_grpc.add_ScheduleServiceServicer_to_server(

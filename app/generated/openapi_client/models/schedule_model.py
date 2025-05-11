@@ -17,7 +17,7 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr
+from pydantic import BaseModel, ConfigDict, StrictInt, StrictStr, field_validator
 from typing import Any, ClassVar, Dict, List, Optional
 from typing import Optional, Set
 from typing_extensions import Self
@@ -38,6 +38,28 @@ class ScheduleModel(BaseModel):
         protected_namespaces=(),
     )
 
+    @field_validator('user_id')
+    def validate_user_id(cls, v):
+        if v <= 0:
+            raise ValueError("user_id должен быть положительным числом")
+        return v
+
+    @field_validator('medicine')
+    def validate_medicine(cls, v):
+        if not v.strip():
+            raise ValueError("Название лекарства не может быть пустым")
+        return v.strip()
+
+    @field_validator('frequency')
+    def validate_frequency(cls, v):
+        if v < 1 or v > 56:
+            raise ValueError("Частота приема должна быть не менее 1 и не больше 56")
+        return v
+
+    @field_validator('duration_days')
+    def validate_duration_days(cls, v):
+        if v <= 0:
+            raise ValueError("Для пожизненного приема укажите null")
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
