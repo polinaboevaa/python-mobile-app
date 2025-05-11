@@ -6,6 +6,7 @@ from typing import AsyncGenerator, Any
 from fastapi import FastAPI, Request
 from contextlib import asynccontextmanager
 
+from app.settings import get_base_settings, get_settings
 from app.transports.router import router as schedule_router
 from app.core.logger import trace_id_var, get_logger
 from app.grpc.server import start_grpc_server
@@ -13,7 +14,11 @@ from app.grpc.server import start_grpc_server
 
 @asynccontextmanager
 async def _lifespan(app: FastAPI) -> AsyncGenerator[dict[str, Any], None]:
-    grpc_server_task = asyncio.create_task(start_grpc_server())
+
+    core_settings = get_base_settings()
+    db_settings = get_settings()
+
+    grpc_server_task = asyncio.create_task(start_grpc_server(db_settings, core_settings))
     try:
         yield {}
     finally:
