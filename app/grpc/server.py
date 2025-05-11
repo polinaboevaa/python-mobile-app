@@ -10,8 +10,7 @@ from grpc_reflection.v1alpha import reflection
 from app.settings import DatabaseSettings, BaseAppSettings
 
 
-async def start_grpc_server(db_settings: DatabaseSettings, app_settings: BaseAppSettings):
-    print("[DEBUG] DB URL:", db_settings.database_url)  # <-- Добавь эту строку
+async def start_grpc_server(db_settings: DatabaseSettings, app_settings: BaseAppSettings, port=50051):
     db_generator = get_db_session(db_settings)
     db = await anext(db_generator)
 
@@ -29,9 +28,9 @@ async def start_grpc_server(db_settings: DatabaseSettings, app_settings: BaseApp
         )
 
         reflection.enable_server_reflection(SERVICE_NAMES, server)
-        server.add_insecure_port('[::]:50051')
+        server.add_insecure_port(f"[::]:{port}")
         await server.start()
-        print("gRPC async server started on port 50051...")
+        print(f"gRPC async server started on port {port}...")
 
         try:
             await server.wait_for_termination()

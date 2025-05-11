@@ -1,30 +1,28 @@
+import socket
+from contextlib import closing
+import grpc
 import pytest
 import asyncio
 from testcontainers.postgres import PostgresContainer
 from unittest.mock import patch
 from urllib.parse import urlparse
-
 from app.settings import DatabaseSettings,get_base_settings
 from app.grpc.server import start_grpc_server
 from app.grpc.generated import schedule_pb2_grpc, schedule_pb2
-
 from alembic import command
 from alembic.config import Config
 
+def find_free_port():
+    with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
+        s.bind(('', 0))
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        return s.getsockname()[1]
 
 @pytest.fixture(scope="session")
 def postgres_container():
     with PostgresContainer("postgres:13") as container:
         container.start()
         yield container
-
-@pytest.fixture(scope="session", autouse=True)
-def apply_migrations(test_db_settings):
-    alembic_cfg = Config("alembic.test.ini")
-    alembic_cfg.set_main_option("sqlalchemy.url", test_db_settings.database_url)
-
-    command.upgrade(alembic_cfg, "head")
-
 
 @pytest.fixture(scope="session")
 def test_db_settings(postgres_container):
@@ -38,6 +36,18 @@ def test_db_settings(postgres_container):
     )
 
 
+@pytest.fixture(scope="function", autouse=True)
+def apply_migrations(test_db_settings):
+    alembic_cfg = Config("alembic.test.ini")
+    alembic_cfg.set_main_option("sqlalchemy.url", test_db_settings.database_url)
+
+    command.upgrade(alembic_cfg, "head")
+
+    yield
+
+    command.downgrade(alembic_cfg, "base")
+    command.upgrade(alembic_cfg, "head")
+
 @pytest.fixture(autouse=True)
 def override_settings(test_db_settings):
     import app.settings as settings
@@ -45,43 +55,50 @@ def override_settings(test_db_settings):
     with patch.object(settings, "get_settings", return_value=test_db_settings):
         yield
 
-
 @pytest.fixture(scope="function")
 async def grpc_server(test_db_settings):
+    port = find_free_port()
     core_settings = get_base_settings()
-    task = asyncio.create_task(start_grpc_server(test_db_settings, core_settings))
-    await asyncio.sleep(1.0)
-
-    yield
-
-    task.cancel()
+    server_task = asyncio.create_task(
+        start_grpc_server(test_db_settings, core_settings, port=port)
+    )
+    await asyncio.sleep(0.1)
+    yield port
+    server_task.cancel()
     try:
-        await task
+        await server_task
     except asyncio.CancelledError:
         pass
 
-
 @pytest.fixture
-async def grpc_client():
-    import grpc
-    channel = grpc.aio.insecure_channel("localhost:50051")
+async def grpc_client(grpc_server):
+    port = grpc_server
+    channel = grpc.aio.insecure_channel(f"localhost:{port}")
     stub = schedule_pb2_grpc.ScheduleServiceStub(channel)
     yield stub
     await channel.close()
 
 @pytest.mark.asyncio
-async def test_add_schedule_grpc(grpc_server, grpc_client):
-    request = schedule_pb2.ScheduleModel(
-        user_id=1,
-        medicine="Aspirin",
-        frequency=2,
-        duration_days=7
-    )
-    response = await grpc_client.AddSchedule(request)
-    assert response.schedule_id > 0
-
-@pytest.mark.asyncio
 async def test_get_schedules_grpc(grpc_server, grpc_client):
+    await grpc_client.AddSchedule(
+        schedule_pb2.ScheduleModel(
+            user_id=1,
+            medicine="medicine1",
+            frequency=3,
+            duration_days=45
+        )
+    )
+    await grpc_client.AddSchedule(
+        schedule_pb2.ScheduleModel(
+            user_id=1,
+            medicine="medicine2",
+            frequency=12,
+            duration_days=12
+        )
+    )
+
     request = schedule_pb2.UserIdRequest(user_id=1)
     response = await grpc_client.GetSchedules(request)
-    assert len(response.active_schedule_ids) >= 0
+
+    assert len(response.active_schedule_ids) == 2
+    assert len(set(response.active_schedule_ids)) == len(response.active_schedule_ids)
