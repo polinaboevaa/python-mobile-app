@@ -1,21 +1,19 @@
-from app.database.session import get_db_session
 from app.integrations.schedule_repository import ScheduleRepository
 from app.integrations.user_repository import UserRepository
 from app.services.helper_service import HelperService
 from app.services.schedule_service import ScheduleService
 from app.services.user_service import UserService
+from app.database.session import get_db_session
 
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.settings import BaseAppSettings, get_base_settings
 
-get_async_db = get_db_session
-
-def make_schedule_repository(db: AsyncSession = Depends(get_async_db)) -> ScheduleRepository:
+def make_schedule_repository(db: AsyncSession = Depends(get_db_session)) -> ScheduleRepository:
     return ScheduleRepository(db)
 
-def make_user_repository(db: AsyncSession = Depends(get_async_db)) -> UserRepository:
+def make_user_repository(db: AsyncSession = Depends(get_db_session)) -> UserRepository:
     return UserRepository(db)
 
 def make_user_service(user_repo: UserRepository = Depends(make_user_repository)) -> UserService:
