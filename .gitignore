@@ -3,5 +3,5 @@ __pycache__
 logs/*
 !logs/.gitkeep
 /.venv/
-.env
+.env.dev
 .env.test

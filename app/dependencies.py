@@ -9,7 +9,6 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.settings import BaseAppSettings, get_base_settings
-from app.utils.app_settings import AppSettings
 
 get_async_db = get_db_session
 

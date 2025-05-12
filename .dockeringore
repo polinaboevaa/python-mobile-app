@@ -1,3 +1,2 @@
-venv
+.venv/
 Dockerfile
-medicineSchedule.db
