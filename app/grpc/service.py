@@ -1,3 +1,5 @@
+import pprint
+
 import grpc
 from app.generated import ScheduleModel
 from app.grpc.generated import schedule_pb2_grpc
@@ -33,7 +35,21 @@ class ScheduleServiceGRPC(schedule_pb2_grpc.ScheduleServiceServicer):
 
     async def GetScheduleById(self, request: schedule_pb2.ScheduleQuery, context) -> schedule_pb2.ScheduleResponse:
         schedule = await self.service.get_schedule_for_day(request.user_id, request.schedule_id)
-        return schedule_pb2.ScheduleResponse(full_schedule=schedule)
+
+        if "schedule_id" in schedule:
+            response = schedule_pb2.ScheduleResponse(
+                full_schedule=schedule_pb2.FullScheduleResponse(
+                    schedule_id=schedule["schedule_id"],
+                    medicine=schedule["medicine"],
+                    time_list=schedule["time_list"]
+                )
+            )
+        else:
+            response = schedule_pb2.ScheduleResponse(
+                message=schedule_pb2.MessageResponse(message=schedule["message"])
+            )
+
+        return response
 
     async def GetNextTakings(self, request: schedule_pb2.UserIdRequest,context) -> schedule_pb2.DynamicSchedulesResponse:
         try:

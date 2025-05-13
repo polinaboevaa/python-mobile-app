@@ -28,7 +28,7 @@ async def start_grpc_server(db_settings: DatabaseSettings, app_settings: BaseApp
         )
 
         reflection.enable_server_reflection(SERVICE_NAMES, server)
-        server.add_insecure_port(f"[::]:{port}")
+        server.add_insecure_port(f"0.0.0.0:{port}")
         await server.start()
         print(f"gRPC async server started on port {port}...")
 

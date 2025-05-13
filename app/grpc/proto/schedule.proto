@@ -50,10 +50,8 @@ message ErrorResponse {
 }
 
 message ScheduleResponse {
-  oneof result {
-    FullScheduleResponse full_schedule = 1;
-    MessageResponse message = 2;
-  }
+  FullScheduleResponse full_schedule = 1;
+  MessageResponse message = 2;
 }
 
 message DynamicSchedulesResponse {

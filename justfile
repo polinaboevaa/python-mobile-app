@@ -13,3 +13,6 @@ generate-models:
         -o {{OUTDIR}} \
         --global-property models,modelTests=false,modelDocs=false \
         --skip-validate-spec
+
+test:
+    $env:APP_ENV="test"; pytest tests/

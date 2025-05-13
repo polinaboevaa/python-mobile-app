@@ -21,7 +21,7 @@ class DatabaseSettings(BaseSettings):
     NAME: str
 
     class Config:
-        env_file = ".env.dev"
+        env_file = ".env"
         env_prefix = "DEV_DB_"
         extra = "ignore"
 
@@ -34,7 +34,7 @@ class DatabaseSettings(BaseSettings):
 
 class TestDatabaseSettings(DatabaseSettings):
     class Config:
-        env_file = ".env.test"
+        env_file = ".env"
         env_prefix = "TEST_DB_"
 
 @lru_cache
